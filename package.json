@@ -1,0 +1,27 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "## Desenvolvedores  - Estéfane Luz - Lucas Goulart",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glrtlucas/back-payment-manager.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/glrtlucas/back-payment-manager/issues"
+  },
+  "homepage": "https://github.com/glrtlucas/back-payment-manager#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "knex": "^0.95.11",
+    "nodemon": "^2.0.13",
+    "pg": "^8.7.1"
+  }
+}
