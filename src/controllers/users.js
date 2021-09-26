@@ -4,6 +4,7 @@ const userRegistrationSchema = require("../validations/userRegistrationSchema");
 
 const userRegistration = async (req, res) => {
   const { name, email, password } = req.body;
+  
   try {
     await userRegistrationSchema.validate(req.body);
 
@@ -28,11 +29,7 @@ const userRegistration = async (req, res) => {
   }
 };
 
-const userLogin = async (req, res) => {
-
-};
 
 module.exports = {
   userRegistration,
-  userLogin,
 };
