@@ -1,11 +1,11 @@
 const knex = require("../database/db");
 const bcrypt = require("bcrypt");
-const registerUserSchema = require("../validations/registerUserSchema");
+const userRegistrationSchema = require("../validations/userRegistrationSchema");
 
-const registerUser = async (req, res) => {
+const userRegistration = async (req, res) => {
   const { name, email, password } = req.body;
   try {
-    await registerUserSchema.validate(req.body);
+    await userRegistrationSchema.validate(req.body);
 
     const userExists = await knex("users").where({ email }).first();
     if (userExists) return res.status(400).json('E-mail já cadastrado.');
@@ -28,6 +28,11 @@ const registerUser = async (req, res) => {
   }
 };
 
+const userLogin = async (req, res) => {
+
+};
+
 module.exports = {
-  registerUser,
+  userRegistration,
+  userLogin,
 };
