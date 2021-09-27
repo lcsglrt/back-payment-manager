@@ -1,13 +1,15 @@
 const express = require('express');
-const routers = express();
+const routes = express();
+const verifyLogin = require('../middlewares/verifyLogin');
 
 const users = require('../controllers/users');
 const loginLogout = require('../controllers/loginLogout');
 
-routers.post('/cadastrar', users.userRegistration);
-routers.post('/login', loginLogout.userLogin);
+routes.post('/cadastrar', users.userRegistration);
+routes.post('/login', loginLogout.userLogin);
 
-// TODO - MIDDLEWARE PARA VERIFICAR SE O USUARIO ESTA LOGADO
+routes.use(verifyLogin);
 
+routes.get('/perfil', users.getUserProfile);
 
-module.exports = routers;
+module.exports = routes;
