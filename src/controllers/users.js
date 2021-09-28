@@ -30,11 +30,25 @@ const userRegistration = async (req, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-  return res.status(200).json(req.userData)
+  return res.status(200).json(req.userData);
+}
+
+const updateUserProfile = async (req, res) => {
+  const { name, email, password, phone, cpf } = req.body;
+  const { id } = req.params;
+
+  try {
+    await userRegistrationSchema.validate(req.body);
+
+    
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
 }
 
 
 module.exports = {
   userRegistration,
   getUserProfile,
+  updateUserProfile
 };
