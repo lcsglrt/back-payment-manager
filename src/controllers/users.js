@@ -29,7 +29,11 @@ const userRegistration = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  return res.status(200).json(req.userData);
+}
 
 module.exports = {
   userRegistration,
+  getUserProfile,
 };
