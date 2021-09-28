@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const verifyLogin = async (req, res, next) => {
     const { authorization } = req.headers;
 
-    if (!authorization) return res.status(401).json('Não autorizado.');
+    if (!authorization) return res.status(401).json('Usuário não autorizado.');
 
     try {
         const token = authorization.replace('Bearer ', '').trim();

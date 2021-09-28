@@ -11,6 +11,5 @@ routes.post('/login', loginLogout.userLogin);
 routes.use(verifyLogin);
 
 routes.get('/perfil', users.getUserProfile);
-routes.put('/perfil/:id', users.updateUserProfile);
 
 module.exports = routes;
