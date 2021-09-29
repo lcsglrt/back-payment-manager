@@ -1,6 +1,9 @@
 {
   "name": "back-end",
   "version": "1.0.0",
+  "engines": {
+    "node": "10.x"
+  },
   "description": "## Desenvolvedores  - Estéfane Luz - Lucas Goulart",
   "main": "index.js",
   "scripts": {
@@ -29,6 +32,5 @@
     "pg": "^8.7.1",
     "yup": "^0.32.9",
     "yup-locales": "^1.2.0",
-    "node": "10.x"
   }
 }
