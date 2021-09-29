@@ -1,5 +1,5 @@
-const userLoginSchema = require('../validations/userLoginSchema');
-const knex = require('../database/db');
+const userLoginSchema = require('../../validations/userLoginSchema');
+const knex = require('../../database/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -30,9 +30,6 @@ const userLogin = async (req, res) => {
   }
 };
 
-const userLogout = async (req, res) => {};
-
 module.exports = {
-  userLogin,
-  userLogout,
+  userLogin
 };

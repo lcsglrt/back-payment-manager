@@ -1,7 +1,7 @@
-const knex = require("../database/db");
+const knex = require("../../database/db");
 const bcrypt = require("bcrypt");
-const userRegistrationSchema = require("../validations/userRegistrationSchema");
-const updateUserProfileSchema = require("../validations/updateUserProfileSchema");
+const userRegistrationSchema = require("../../validations/userRegistrationSchema");
+const updateUserProfileSchema = require("../../validations/updateUserProfileSchema");
 
 const userRegistration = async (req, res) => {
   const { name, email, password } = req.body;
@@ -44,8 +44,27 @@ const updateUserProfile = async (req, res) => {
     const userExists = await knex('users').where('id', id).first();
     if (!userExists) return res.status(404).json('Usuário não encontrado.');
 
+    let fieldsToUpdate = {};
+
+    if (name) {
+      fieldsToUpdate = {...fieldsToUpdate, name };
+    }
+
+    if (email) {
+      fieldsToUpdate = {...fieldsToUpdate, email};
+    }
+
     if (password) {
       password = await bcrypt.hash(password, 10);
+      fieldsToUpdate = {...fieldsToUpdate, password};
+    }
+
+    if (phone) {
+      fieldsToUpdate = {...fieldsToUpdate, phone};
+    }
+
+    if (cpf) {
+      fieldsToUpdate = {...fieldsToUpdate, cpf};
     }
 
     if (email !== req.userData.email) {
@@ -58,13 +77,7 @@ const updateUserProfile = async (req, res) => {
 
     const updatedUser = await knex('users')
       .where({ id })
-      .update({
-        name,
-        email,
-        password,
-        phone,
-        cpf
-      });
+      .update(fieldsToUpdate);
 
     if (!updatedUser) return res.status(400).json('Usuário não foi atualizado.');
 
