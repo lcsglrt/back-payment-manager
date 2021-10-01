@@ -2,15 +2,19 @@ const express = require('express');
 const routes = express();
 const verifyLogin = require('../middlewares/verifyLogin');
 
-const users = require('../controllers/users');
-const loginLogout = require('../controllers/loginLogout');
+const users = require('../controllers/users/users');
+const userLogin = require('../controllers/users/userLogin');
+
+const clients = require('../controllers/clients/clients');
 
 routes.post('/cadastrar', users.userRegistration);
-routes.post('/login', loginLogout.userLogin);
+routes.post('/login', userLogin.userLogin);
 
 routes.use(verifyLogin);
 
 routes.get('/perfil', users.getUserProfile);
 routes.put('/perfil', users.updateUserProfile);
+
+routes.post('/clientes', clients.clientRegistration);
 
 module.exports = routes;
