@@ -4,7 +4,7 @@ const clientRegistrationSchema = require("../../validations/clientRegistrationSc
 const clientRegistration = async (req, res) => {
   const { name, email, cpf, state,
     phone, zipcode, street, district,
-    city, addtional, landmark,
+    city, additional, landmark,
   } = req.body;
   const { id } = req.userData;
 
@@ -17,7 +17,7 @@ const clientRegistration = async (req, res) => {
     const newClient = await knex("clients")
       .insert({ user_id: id, name, email, cpf,
         phone, zipcode, street, state,
-        district, city, addtional, landmark
+        district, city, additional, landmark
       }).returning("*");
 
     if (!newClient) return res.status(400).json('Erro ao cadastrar cliente.');
