@@ -11,8 +11,11 @@ const clientRegistration = async (req, res) => {
   try {
     await clientRegistrationSchema.validate(req.body);
 
-    const clientExists = await knex("clients").where("email", email).orWhere("cpf", cpf).first();
-    if (clientExists) return res.status(404).json("Cliente já cadastrado.");
+    const clientEmailExists = await knex("clients").where("email", email).first();
+    if (clientEmailExists) return res.status(404).json("E-mail já cadastrado.");
+
+    const clientCPFExists = await knex("clients").where("cpf", cpf).first();
+    if (clientCPFExists) return res.status(404).json("CPF já cadastrado.");
 
     const newClient = await knex("clients")
       .insert({ user_id: id, name, email, cpf,
