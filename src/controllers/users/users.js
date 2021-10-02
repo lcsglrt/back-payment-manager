@@ -55,7 +55,7 @@ const updateUserProfile = async (req, res) => {
       if (userEmailExists) return res.status(400).json('E-mail já cadastrado.');
     }
 
-    if (cpf) {
+    if (cpf !== req.userData.cpf) {
       const userCPFExists = await knex('users')
         .where({ cpf })
         .first();
