@@ -1,5 +1,7 @@
 const knex = require("../../database/db");
 const clientRegistrationSchema = require("../../validations/clientRegistrationSchema");
+const fieldsToUpdateClientProfile = require("../../validations/fieldsToUpdateClientProfile");
+const updateClientProfileSchema = require("../../validations/updateClientProfileSchema");
 
 const clientRegistration = async (req, res) => {
   const { name, email, cpf, state,
@@ -31,6 +33,39 @@ const clientRegistration = async (req, res) => {
   }
 };
 
+const updateClientProfile = async (req, res) => {
+  const { email, cpf } = req.body;
+  const { id } = req.params;
+
+  try {
+    await updateClientProfileSchema.validate(req.body);
+
+    const clientExists = await knex('clients').where('id', id).first();
+    if (!clientExists) return res.status(404).json('Cliente não encontrado.');
+
+    if (email !== clientExists.email) {
+      const clientEmailExists = await knex('clients').where({ email }).first();
+      if (clientEmailExists) return res.status(400).json('E-mail já cadastrado.');
+    }
+
+    if (cpf !== clientExists.cpf) {
+      const clientCPFExists = await knex('clients').where({ cpf }).first();
+      if (clientCPFExists) return res.status(400).json('CPF já cadastrado.');
+    }
+
+    const fieldsToUpdate = await fieldsToUpdateClientProfile(req.body);
+    // const updateClient = await knex('clients').where({ id }).update(fieldsToUpdate);
+
+    // if (!updateClient) return res.status(400).json('Cliente não foi atualizado.');
+
+    return res.status(200).json('Cliente atualizado com sucesso.');
+
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
   clientRegistration,
+  updateClientProfile,
 };

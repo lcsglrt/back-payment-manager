@@ -16,5 +16,6 @@ routes.get('/perfil', users.getUserProfile);
 routes.put('/perfil', users.updateUserProfile);
 
 routes.post('/clientes', clients.clientRegistration);
+routes.put('/clientes/:id', clients.updateClientProfile);
 
 module.exports = routes;
