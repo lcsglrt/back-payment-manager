@@ -6,7 +6,6 @@ const createCharge = async (req, res) => {
   const { id } = req.userData;
 
   try {
-    console.log(req.body);
     await createChargeSchema.validate(req.body);
 
     const now = new Date();
@@ -20,8 +19,6 @@ const createCharge = async (req, res) => {
       amount,
       due_date
     }).returning('*');
-
-    console.log(newCharge);
 
     if (!newCharge) return res.status(400).json('Erro ao criar cobrança.');
 
