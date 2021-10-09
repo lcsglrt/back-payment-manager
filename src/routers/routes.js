@@ -21,5 +21,7 @@ routes.get('/clientes/:id', clients.getClientProfile);
 routes.put('/clientes/:id', clients.updateClientProfile);
 
 routes.post('/cobrancas', charges.createCharge);
+routes.get('/cobrancas', charges.chargeList);
+
 
 module.exports = routes;
