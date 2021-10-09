@@ -33,10 +33,14 @@ const clientRegistration = async (req, res) => {
 const getClientProfile = async (req, res) => {
   const { id } = req.params;
 
-  const clientExists = await knex('clients').where('id', id).first();
-  if (!clientExists) return res.status(400).json('Cliente não encontrado.');
+  try {
+    const clientExists = await knex('clients').where('id', id).first();
+    if (!clientExists) return res.status(400).json('Cliente não encontrado.');
 
-  return res.status(200).json(clientExists);
+    return res.status(200).json(clientExists);
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
 }
 
 const updateClientProfile = async (req, res) => {
@@ -71,8 +75,31 @@ const updateClientProfile = async (req, res) => {
   }
 }
 
+const clientList = async (req, res) => {
+  try {
+    const getAllClients = await knex('clients')
+    .select('id', 'name', 'email', 'cpf', 'phone')
+    .returning('*');
+    const getAllCharges = await knex('charges')
+    .select('id', 'client_id', 'description', 'status', 'amount', 'due_date')
+    .returning('*');
+    
+    const clients = getAllClients.map(client => {
+      const charges = getAllCharges.filter(charge => client.id === charge.client_id);
+      const totalAmountCharges = lodash.sumBy(charges, charge => { return charge.amount });
+      const totaAmountReceived = lodash.sumBy(charges, charge => { if(charge.status) return charge.amount });
+      return client = {...client, charges, totalAmountCharges, totaAmountReceived}
+    });
+    
+    res.status(200).json(clients);
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
   clientRegistration,
   getClientProfile,
   updateClientProfile,
+  clientList
 };
