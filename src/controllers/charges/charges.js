@@ -29,6 +29,19 @@ const createCharge = async (req, res) => {
 
 }
 
+const chargeList = async (req, res) => {
+  try {
+    const charges = await knex('charges')
+    .join('clients', 'charges.client_id', 'clients.id')
+    .select('charges.id', 'clients.name', 'charges.description', 'charges.amount', 'charges.status', 'charges.due_date');
+
+    res.status(200).json(charges);
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
 module.exports ={
   createCharge,
+  chargeList
 }
