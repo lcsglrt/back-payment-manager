@@ -78,17 +78,37 @@ const updateClientProfile = async (req, res) => {
 const clientList = async (req, res) => {
   try {
     const getAllClients = await knex('clients')
-    .select('id', 'name', 'email', 'cpf', 'phone')
+    .select('id', 'name', 'email', 'cpf', 'phone', 'zipcode',
+    'district', 'city', 'street', 'additional', 'landmark')
     .returning('*');
     const getAllCharges = await knex('charges')
     .select('id', 'client_id', 'description', 'status', 'amount', 'due_date')
     .returning('*');
     
     const clients = getAllClients.map(client => {
+      const address = {
+        street: client.street,
+        additional: client.additional,
+        district: client.district,
+        city: client.city,
+        zipcode: client.zipcode,
+        landmark: client.landmark
+      }
+
       const charges = getAllCharges.filter(charge => client.id === charge.client_id);
       const totalAmountCharges = lodash.sumBy(charges, charge => { return charge.amount });
       const totaAmountReceived = lodash.sumBy(charges, charge => { if(charge.status) return charge.amount });
-      return client = {...client, charges, totalAmountCharges, totaAmountReceived}
+
+      let { 
+        street, 
+        additional, 
+        city,
+        landmark,
+        district,
+        zipcode,
+        ...clientData
+      } = client;
+      return clientData = { ...clientData, address, charges, totalAmountCharges, totaAmountReceived}
     });
     
     res.status(200).json(clients);
