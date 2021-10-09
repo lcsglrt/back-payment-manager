@@ -16,6 +16,7 @@ routes.get('/perfil', users.getUserProfile);
 routes.put('/perfil', users.updateUserProfile);
 
 routes.post('/clientes', clients.clientRegistration);
+routes.get('/clientes/', clients.clientList);
 routes.get('/clientes/:id', clients.getClientProfile);
 routes.put('/clientes/:id', clients.updateClientProfile);
 
