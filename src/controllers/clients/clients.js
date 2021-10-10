@@ -98,7 +98,7 @@ const clientList = async (req, res) => {
 
       const charges = getAllCharges.filter(charge => client.id === charge.client_id);
       const totalAmountCharges = lodash.sumBy(charges, charge => { return charge.amount });
-      const totaAmountReceived = lodash.sumBy(charges, charge => { if(charge.status) return charge.amount });
+      const totaAmountReceived = lodash.sumBy(charges, charge => { return charge.status ? charge.amount : 0 });
 
       let { 
         street, 
