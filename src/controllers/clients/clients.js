@@ -79,7 +79,7 @@ const clientList = async (req, res) => {
   try {
     const getAllClients = await knex('clients')
     .select('id', 'name', 'email', 'cpf', 'phone', 'zipcode',
-    'district', 'city', 'street', 'additional', 'landmark')
+    'district', 'city', 'street', 'state', 'additional', 'landmark')
     .returning('*');
     const getAllCharges = await knex('charges')
     .select('id', 'client_id', 'description', 'status', 'amount', 'due_date')
@@ -91,6 +91,7 @@ const clientList = async (req, res) => {
         additional: client.additional,
         district: client.district,
         city: client.city,
+        state: client.state,
         zipcode: client.zipcode,
         landmark: client.landmark
       }
@@ -108,6 +109,7 @@ const clientList = async (req, res) => {
         zipcode,
         ...clientData
       } = client;
+
       return clientData = { ...clientData, address, charges, totalAmountCharges, totaAmountReceived}
     });
     
@@ -117,9 +119,22 @@ const clientList = async (req, res) => {
   }
 }
 
+const clientNameList = async (req, res) => {
+  try {
+    const clientNameList = await knex('clients').select('id', 'name');
+
+    if (!clientNameList) return res.status(404).json('Nenhum cliente cadastrado.');
+
+    res.status(200).json(clientNameList);
+  } catch (error) {
+    
+  }
+}
+
 module.exports = {
   clientRegistration,
   getClientProfile,
   updateClientProfile,
-  clientList
+  clientList,
+  clientNameList
 };
