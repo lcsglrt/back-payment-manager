@@ -2,7 +2,7 @@ const knex = require('../../database/db');
 const createChargeSchema = require('../../validations/createChargeSchema');
 
 const createCharge = async (req, res) => {
-  const { client_id, description, status, amount, due_date } = req. body;
+  const { client_id, description, status, amount, due_date } = req.body;
   const { id } = req.userData;
 
   try {
