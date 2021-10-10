@@ -1,7 +1,7 @@
 const yup = require('./yup');
 
-const clientRegistrationSchema = yup.object().shape({
-    name: yup.string().required(),
+const updateClientProfileSchema = yup.object().shape({
+    name: yup.string().required('Nome é um campo obrigatório.'),
     email: yup.string().email().required(),
     cpf: yup.string().required()
       .matches(/^[0-9]+$/, 'CPF precisa ser apenas números')
@@ -11,15 +11,16 @@ const clientRegistrationSchema = yup.object().shape({
       .matches(/^[0-9]+$/, 'Telefone precisa ser apenas números')
       .min(10, 'Telefone precisa ter no mínimo 10 dígitos, incluindo o ddd')
       .max(11, 'Telefone precisa ter no máximo 11 dígitos, incluindo o ddd'),
-    street: yup.string(),
-    additional: yup.string(),
-    district: yup.string(),
-    city: yup.string(),
     zipcode: yup.string().nullable()
       .matches(/^[0-9]+$/, 'CEP precisa ser apenas números')
       .min(8, 'CEP não pode ter menos que 8 dígitos')
       .max(8, 'CEP não pode ter mais que 8 dígitos'),
-    landmark: yup.string()
+    street: yup.string().nullable(),
+    additional: yup.string().nullable(),
+    district: yup.string().nullable(),
+    city: yup.string().nullable(),
+    state: yup.string().nullable(),
+    landmark: yup.string().nullable(),
   });
 
-module.exports = clientRegistrationSchema;
+module.exports = updateClientProfileSchema;

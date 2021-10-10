@@ -1,8 +1,8 @@
 const knex = require("../../database/db");
+const lodash = require('lodash');
 const bcrypt = require("bcrypt");
 const userRegistrationSchema = require("../../validations/userRegistrationSchema");
 const updateUserProfileSchema = require("../../validations/updateUserProfileSchema");
-const fieldsToUpdateUserProfile = require('../../validations/fieldsToUpdateUserProfile');
 
 const userRegistration = async (req, res) => {
   const { name, email, password } = req.body;
@@ -15,13 +15,7 @@ const userRegistration = async (req, res) => {
 
     const encryptedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await knex('users')
-      .insert({
-        name,
-        email,
-        password: encryptedPassword,
-      })
-      .returning('*');
+    const newUser = await knex('users').insert({ name, email, password: encryptedPassword }).returning('*');
 
     if (!newUser) return res.status(400).json('Erro ao cadastrar usuário');
 
@@ -36,7 +30,7 @@ const getUserProfile = async (req, res) => {
 }
 
 const updateUserProfile = async (req, res) => {
-  let { name, email, password, phone, cpf } = req.body;
+  let { email, cpf } = req.body;
   const { id } = req.userData;
 
   try {
@@ -45,27 +39,25 @@ const updateUserProfile = async (req, res) => {
     const userExists = await knex('users').where('id', id).first();
     if (!userExists) return res.status(404).json('Usuário não encontrado.');
 
-    const fieldsToUpdate = await fieldsToUpdateUserProfile(req.body);
-
     if (email !== req.userData.email) {
-      const userEmailExists = await knex('users')
-        .where({ email })
-        .first();
+      const userEmailExists = await knex('users').where({ email }).first();
       
       if (userEmailExists) return res.status(400).json('E-mail já cadastrado.');
     }
 
     if (cpf !== req.userData.cpf) {
-      const userCPFExists = await knex('users')
-        .where({ cpf })
-        .first();
+      const userCPFExists = await knex('users').where({ cpf }).first();
 
       if (userCPFExists) return res.status(400).json('CPF já cadastrado.');
     }
+    
+    const fieldsToUpdate = lodash.pickBy(req.body);
 
-    const updatedUser = await knex('users')
-      .where({ id })
-      .update(fieldsToUpdate);
+    if (fieldsToUpdate.password) {
+      fieldsToUpdate.password = await bcrypt.hash(fieldsToUpdate.password, 10);
+    }
+
+    const updatedUser = await knex('users').where({ id }).update(fieldsToUpdate);
 
     if (!updatedUser) return res.status(400).json('Usuário não foi atualizado.');
 

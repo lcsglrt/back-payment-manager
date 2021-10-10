@@ -2,26 +2,26 @@ const knex = require('../database/db');
 const jwt = require('jsonwebtoken');
 
 const verifyLogin = async (req, res, next) => {
-    const { authorization } = req.headers;
+	const { authorization } = req.headers;
 
-    if (!authorization) return res.status(401).json('Usuário não autorizado.');
+	if (!authorization) return res.status(401).json('Usuário precisa estar logado.');
 
-    try {
-        const token = authorization.replace('Bearer ', '').trim();
-        const { id } = jwt.verify(token, process.env.JWT_SECRET);
+	try {
+		const token = authorization.replace('Bearer ', '').trim();
+		const { id } = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await knex('users').where('id', id).first();
+		const user = await knex('users').where('id', id).first();
 
-        if (!user) return res.status(404).json('Usuário não encontrado.');
+		if (!user) return res.status(404).json('Usuário precisa estar logado.');
 
-        const { password: _, ...userData } = user;
+		const { password: _, ...userData } = user;
 
-        req.userData = userData;
-        
-        next();
-    } catch (error) {
-        return res.status(400).json(error.message);
-    }
-}
+		req.userData = userData;
+
+		next();
+	} catch (error) {
+		return res.status(400).json(error.message);
+	}
+};
 
 module.exports = verifyLogin;
