@@ -35,6 +35,8 @@ const chargeList = async (req, res) => {
     .join('clients', 'charges.client_id', 'clients.id')
     .select('charges.id', 'clients.name', 'charges.description', 'charges.amount', 'charges.status', 'charges.due_date');
 
+    if (charges.length === 0) return res.status(404).json('Nenhuma cobrança cadastrada.');
+
     res.status(200).json(charges);
   } catch (error) {
     res.status(400).json(error.message);
