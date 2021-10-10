@@ -67,7 +67,7 @@ const getDetailedClientProfile = async (req, res) => {
       return clientData = { ...clientData, address, charges}
     });
     
-    return res.status(200).json(clients);
+    return res.status(200).json(clients[0]);
   } catch (error) {
     return res.status(400).json(error.message);
   }
@@ -105,7 +105,7 @@ const getClientProfile = async (req, res) => {
       return clientData = { ...clientData, address }
     });
     
-    return res.status(200).json(clients);
+    return res.status(200).json(clients[0]);
   } catch (error) {
     return res.status(400).json(error.message);
   }
