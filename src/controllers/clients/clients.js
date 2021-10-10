@@ -30,7 +30,7 @@ const clientRegistration = async (req, res) => {
   }
 };
 
-const getClientProfile = async (req, res) => {
+const getDetailedClientProfile = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -60,10 +60,49 @@ const getClientProfile = async (req, res) => {
         landmark,
         district,
         zipcode,
+        state,
         ...clientData
       } = client;
 
       return clientData = { ...clientData, address, charges}
+    });
+    
+    return res.status(200).json(clients);
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
+}
+
+const getClientProfile = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const getClients = await knex('clients').select('*').where('id', id).returning('*');
+
+    if (getClients.length === 0) return res.status(404).json('Cliente não encontrado.');
+    
+    const clients = getClients.map(client => {
+      const address = {
+        street: client.street,
+        additional: client.additional,
+        district: client.district,
+        city: client.city,
+        state: client.state,
+        zipcode: client.zipcode,
+        landmark: client.landmark
+      }
+
+      let { 
+        street, 
+        additional, 
+        city,
+        landmark,
+        district,
+        zipcode,
+        ...clientData
+      } = client;
+
+      return clientData = { ...clientData, address }
     });
     
     return res.status(200).json(clients);
@@ -157,6 +196,7 @@ const clientNameList = async (req, res) => {
 
 module.exports = {
   clientRegistration,
+  getDetailedClientProfile,
   getClientProfile,
   updateClientProfile,
   clientList,
