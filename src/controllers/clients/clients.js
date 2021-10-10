@@ -34,10 +34,39 @@ const getClientProfile = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const clientExists = await knex('clients').where('id', id).first();
-    if (!clientExists) return res.status(400).json('Cliente não encontrado.');
+    const getClients = await knex('clients').select('*').where('id', id).returning('*');
 
-    return res.status(200).json(clientExists);
+    if (getClients.length === 0) return res.status(404).json('Cliente não encontrado.');
+
+    const getCharges = await knex('charges').select('*').where('client_id', id).returning('*');
+    
+    const clients = getClients.map(client => {
+      const address = {
+        street: client.street,
+        additional: client.additional,
+        district: client.district,
+        city: client.city,
+        state: client.state,
+        zipcode: client.zipcode,
+        landmark: client.landmark
+      }
+
+      const charges = getCharges.filter(charge => client.id === charge.client_id);
+
+      let { 
+        street, 
+        additional, 
+        city,
+        landmark,
+        district,
+        zipcode,
+        ...clientData
+      } = client;
+
+      return clientData = { ...clientData, address, charges}
+    });
+    
+    return res.status(200).json(clients);
   } catch (error) {
     return res.status(400).json(error.message);
   }
@@ -77,14 +106,10 @@ const updateClientProfile = async (req, res) => {
 
 const clientList = async (req, res) => {
   try {
-    const getAllClients = await knex('clients')
-    .select('id', 'name', 'email', 'cpf', 'phone', 'zipcode',
-    'district', 'city', 'street', 'state', 'additional', 'landmark')
-    .returning('*');
-    const getAllCharges = await knex('charges')
-    .select('id', 'client_id', 'description', 'status', 'amount', 'due_date')
-    .returning('*');
-    
+    const getAllClients = await knex('clients').select('*').returning('*');
+    if (getAllClients.length === 0) return res.status(404).json('Nenhum cliente cadastrado.');
+    const getAllCharges = await knex('charges').select('*').returning('*');
+
     const clients = getAllClients.map(client => {
       const address = {
         street: client.street,
@@ -110,7 +135,7 @@ const clientList = async (req, res) => {
         ...clientData
       } = client;
 
-      return clientData = { ...clientData, address, charges, totalAmountCharges, totaAmountReceived}
+      return clientData = { ...clientData, address, totalAmountCharges, totaAmountReceived}
     });
     
     res.status(200).json(clients);
@@ -122,12 +147,11 @@ const clientList = async (req, res) => {
 const clientNameList = async (req, res) => {
   try {
     const clientNameList = await knex('clients').select('id', 'name');
-
-    if (!clientNameList) return res.status(404).json('Nenhum cliente cadastrado.');
+    if (clientNameList.length === 0) return res.status(404).json('Nenhum cliente cadastrado.');
 
     res.status(200).json(clientNameList);
   } catch (error) {
-    
+    return res.status(400).json(error.message);
   }
 }
 
@@ -136,5 +160,5 @@ module.exports = {
   getClientProfile,
   updateClientProfile,
   clientList,
-  clientNameList
+  clientNameList,
 };
