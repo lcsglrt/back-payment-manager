@@ -5,7 +5,7 @@ const createChargeSchema = yup.object().shape({
     description: yup.string().required(),
     status: yup.boolean().required(),
     amount: yup.number().required(),
-    due_date: yup.date().required()
+    due_date: yup.number.required()
   });
 
 module.exports = createChargeSchema;
