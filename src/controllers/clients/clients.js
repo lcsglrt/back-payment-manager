@@ -160,7 +160,7 @@ const clientList = async (req, res) => {
       const today = datefns.format(new Date(), dateFormat);
       const isLate = charges.some(charge => {
         if (charge.client_id === client.id) {
-          const due_dateFormated = datefns.format(datefns.fromUnixTime(charge.due_date), dateFormat);
+          const due_dateFormated = datefns.format(datefns.fromUnixTime(charge.due_date/1000), dateFormat);
           if (charge.status === false && due_dateFormated < today) return true;
         }
       });
