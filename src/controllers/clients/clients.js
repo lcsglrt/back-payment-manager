@@ -2,6 +2,7 @@ const knex = require("../../database/db");
 const lodash = require('lodash');
 const clientRegistrationSchema = require("../../validations/clientRegistrationSchema");
 const updateClientProfileSchema = require("../../validations/updateClientProfileSchema");
+const datefns = require('date-fns');
 
 const clientRegistration = async (req, res) => {
   const { name, email, cpf, state, phone, zipcode, street, district, city, additional, landmark } = req.body;
@@ -150,31 +151,34 @@ const clientList = async (req, res) => {
     const getAllCharges = await knex('charges').select('*').returning('*');
 
     const clients = getAllClients.map(client => {
-      const address = {
-        street: client.street,
-        additional: client.additional,
-        district: client.district,
-        city: client.city,
-        state: client.state,
-        zipcode: client.zipcode,
-        landmark: client.landmark
-      }
-
       const charges = getAllCharges.filter(charge => client.id === charge.client_id);
+
       const totalAmountCharges = lodash.sumBy(charges, charge => { return charge.amount });
       const totaAmountReceived = lodash.sumBy(charges, charge => { return charge.status ? charge.amount : 0 });
 
+      const dateFormat = 'yyyy-MM-dd';
+      const today = datefns.format(new Date(), dateFormat);
+      const isLate = charges.some(charge => {
+        if (charge.client_id === client.id) {
+          const due_dateFormated = datefns.format(datefns.fromUnixTime(charge.due_date), dateFormat);
+          if (charge.status === false && due_dateFormated < today) return true;
+        }
+      });
+
       let { 
+        user_id,
+        cpf,
         street, 
         additional, 
         city,
         landmark,
         district,
         zipcode,
+        state,
         ...clientData
       } = client;
 
-      return clientData = { ...clientData, address, totalAmountCharges, totaAmountReceived}
+      return clientData = { ...clientData, totalAmountCharges, totaAmountReceived, isLate }
     });
     
     res.status(200).json(clients);
