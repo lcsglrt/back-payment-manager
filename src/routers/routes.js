@@ -16,14 +16,17 @@ routes.get('/perfil', users.getUserProfile);
 routes.put('/perfil', users.updateUserProfile);
 
 routes.post('/clientes', clients.clientRegistration);
-routes.get('/clientes/', clients.clientList);
-routes.get('/nomes-clientes/', clients.clientNameList);
+routes.get('/clientes', clients.clientList);
+routes.get('/nomes-clientes', clients.clientNameList);
 routes.get('/detalhes-cliente/:id', clients.getDetailedClientProfile);
 routes.get('/perfil-clientes/:id', clients.getClientProfile);
 routes.put('/clientes/:id', clients.updateClientProfile);
 
 routes.post('/cobrancas', charges.createCharge);
 routes.get('/cobrancas', charges.chargeList);
+routes.put('/cobrancas/:id', charges.updateCharge);
+routes.get('/cobrancas/:id', charges.getCharge);
+routes.delete('/cobrancas/:id', charges.deleteCharge);
 
 
 module.exports = routes;

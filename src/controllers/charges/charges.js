@@ -1,5 +1,6 @@
 const knex = require('../../database/db');
 const createChargeSchema = require('../../validations/createChargeSchema');
+const updateChargeSchema = require('../../validations/updateChargeSchema');
 
 const createCharge = async (req, res) => {
   const { client_id, description, status, amount, due_date } = req.body;
@@ -43,7 +44,48 @@ const chargeList = async (req, res) => {
   }
 }
 
+const updateCharge = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const chargeExists = await knex('charges').where({ id }).first();
+    if (!chargeExists) return res.status(404).json('Cobrança não existe.');
+
+    await updateChargeSchema.validate(req.body);
+
+    const update = await knex('charges').where({ id }).update(req.body);
+    if (!update) return res.status(400).status('Erro ao atualizar cobrança');
+
+    res.status(200).json('Cobrança atualizada com sucesso.');
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
+const getCharge = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const chargeExists = await knex('charges').where({ id }).first();
+    if (!chargeExists) return res.status(404).json('Cobrança não existe.');
+
+    const { create_at, user_id, ...chargeData } = chargeExists;
+
+    return res.status(200).json(chargeData)
+
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
+const deleteCharge = async (req, res) => {
+
+}
+
 module.exports ={
   createCharge,
-  chargeList
+  chargeList,
+  updateCharge,
+  getCharge,
+  deleteCharge
 }
