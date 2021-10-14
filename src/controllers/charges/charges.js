@@ -48,8 +48,8 @@ const updateCharge = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const chargeExists = await knex('charges').where({ id }).first();
-    if (!chargeExists) return res.status(404).json('Cobrança não existe.');
+    const chargeExists = await findCharge(id);
+    if(!chargeExists) return res.status(404).json('Cobrança não encontrada.');
 
     await updateChargeSchema.validate(req.body);
 
@@ -79,7 +79,30 @@ const getCharge = async (req, res) => {
 }
 
 const deleteCharge = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const chargeExists = await findCharge(id);
+    if (!chargeExists) return res.status(404).json('Cobrança não encontrada.');
+
+    const nowInSecond = Math.floor(new Date() / 1000);
+    if (parseInt(chargeExists.due_date) < nowInSecond && chargeExists.due_date) {
+      return res.status(400).json('Não é possível excluir uma cobrança vencida.');
+    }
+
+    const deleteCharge = await knex('charges').delete().where({ id });
+    if (!deleteCharge) return res.status(400).json('Erro ao deletar cobrança.');
+
+    return res.status(200).json('Cobrança deletada com sucesso.');
+
+  } catch (error) {
+    res.status(400).json(error.message);
+  }
+}
+
+async function findCharge(chargeID) {
+  const chargeExists = await knex('charges').where({'id': chargeID}).first();
+  return chargeExists ? chargeExists : false;
 }
 
 module.exports ={
