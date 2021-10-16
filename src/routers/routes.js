@@ -6,6 +6,7 @@ const users = require('../controllers/users/users');
 const userLogin = require('../controllers/users/userLogin');
 const clients = require('../controllers/clients/clients');
 const charges = require('../controllers/charges/charges');
+const chargesReports = require('../controllers/reports/charges');
 
 routes.post('/cadastrar', users.userRegistration);
 routes.post('/login', userLogin.userLogin);
@@ -28,5 +29,9 @@ routes.get('/cobrancas', charges.chargeList);
 routes.put('/cobrancas/:id', charges.updateCharge);
 routes.get('/cobrancas/:id', charges.getCharge);
 routes.delete('/cobrancas/:id', charges.deleteCharge);
+
+routes.get('/relatorios/clientes', clients.reportClients);
+routes.get('/relatorios/cobrancas', chargesReports.reports);
+
 
 module.exports = routes;

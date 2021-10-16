@@ -1,6 +1,7 @@
 const knex = require('../../database/db');
 const createChargeSchema = require('../../validations/createChargeSchema');
 const updateChargeSchema = require('../../validations/updateChargeSchema');
+const datafns = require('date-fns');
 
 const createCharge = async (req, res) => {
   const { client_id, description, status, amount, due_date } = req.body;
