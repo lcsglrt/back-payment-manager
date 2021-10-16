@@ -198,7 +198,7 @@ const clientNameList = async (req, res) => {
   }
 }
 
-const qtyOnDayOverdue = async (req, res) => {
+const reportClients = async (req, res) => {
   const dateFormat = 'yyyy-MM-dd';
   const today = datefns.format(new Date(), dateFormat);
   let qtyOnDay = 0;
@@ -244,5 +244,5 @@ module.exports = {
   updateClientProfile,
   clientList,
   clientNameList,
-  qtyOnDayOverdue
+  reportClients
 };
