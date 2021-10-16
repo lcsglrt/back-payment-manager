@@ -21,12 +21,12 @@ routes.get('/nomes-clientes', clients.clientNameList);
 routes.get('/detalhes-cliente/:id', clients.getDetailedClientProfile);
 routes.get('/perfil-clientes/:id', clients.getClientProfile);
 routes.put('/clientes/:id', clients.updateClientProfile);
+routes.get('/clientes/relatorios', clients.qtyOnDayOverdue);
 
 routes.post('/cobrancas', charges.createCharge);
 routes.get('/cobrancas', charges.chargeList);
 routes.put('/cobrancas/:id', charges.updateCharge);
 routes.get('/cobrancas/:id', charges.getCharge);
 routes.delete('/cobrancas/:id', charges.deleteCharge);
-
 
 module.exports = routes;
