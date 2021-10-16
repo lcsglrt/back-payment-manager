@@ -21,7 +21,7 @@ routes.get('/nomes-clientes', clients.clientNameList);
 routes.get('/detalhes-cliente/:id', clients.getDetailedClientProfile);
 routes.get('/perfil-clientes/:id', clients.getClientProfile);
 routes.put('/clientes/:id', clients.updateClientProfile);
-routes.get('/clientes/relatorios', clients.qtyOnDayOverdue);
+routes.get('/clientes/relatorios', clients.reportClients);
 
 routes.post('/cobrancas', charges.createCharge);
 routes.get('/cobrancas', charges.chargeList);
