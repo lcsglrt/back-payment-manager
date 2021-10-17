@@ -124,7 +124,63 @@ const clients = async (req, res) => {
   }  
 }
 
+const charges = async (req, res) => {
+  const { status } = req.query;
+
+  try {
+    const getCharges = await knex('charges');
+
+    if (status === 'previstas') {
+      const expected = getCharges.filter(charge => {
+        const due_dateFormatted = datefns.format(datefns.fromUnixTime(charge.due_date/1000), dateFormat);
+        return !charge.status && due_dateFormatted >= today;
+      });
+      
+      const expectedCharges = expected.map(charge => {
+        let { create_at, user_id, ...chargeData } = charge;
+        return chargeData;
+      });
+
+      if (expectedCharges.length === 0) return res.status(400).json('Não existe cobranças previstas.');
+
+      return res.status(200).json(expectedCharges);
+    }
+
+    if (status === 'vencidas') {
+      const overdue = getCharges.filter(charge => {
+        const due_dateFormatted = datefns.format(datefns.fromUnixTime(charge.due_date/1000), dateFormat);
+        return !charge.status && due_dateFormatted < today;
+      }).map(charge => {
+        let { create_at, user_id, ...chargeData } = charge;
+        return chargeData;
+      });
+
+      if (overdue.length === 0) return res.status(400).json('Não existe cobranças vencidas.');
+
+      return res.status(200).json(overdue);
+    }
+
+    if (status === 'pagas') {
+      const paid = getCharges
+      .filter(charge => charge.status)
+      .map(charge => {
+        let { create_at, user_id, ...chargeData } = charge;
+        return chargeData;
+      });
+
+      if (paid.length === 0) return res.status(400).json('Não existe cobranças pagas.');
+
+      return res.status(200).json(paid);
+      
+    }
+    
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
+}
+
 module.exports = {
   general,
   clients,
+  charges,
 }

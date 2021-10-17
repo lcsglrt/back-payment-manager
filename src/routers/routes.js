@@ -33,5 +33,6 @@ routes.delete('/cobrancas/:id', charges.deleteCharge);
 
 routes.get('/relatorios', reports.general);
 routes.get('/relatorios/clientes', reports.clients);
+routes.get('/relatorios/cobrancas', reports.charges);
 
 module.exports = routes;
