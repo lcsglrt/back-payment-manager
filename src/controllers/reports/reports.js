@@ -128,6 +128,7 @@ const charges = async (req, res) => {
   const { status } = req.query;
 
   try {
+    const getClients = await knex('clients').select('id', 'name');
     const getCharges = await knex('charges');
 
     if (status === 'previstas') {
@@ -137,7 +138,10 @@ const charges = async (req, res) => {
       });
       
       const expectedCharges = expected.map(charge => {
+        const clients = getClients.filter(client => client.id === charge.client_id);
+        let { id, ...clientName } = clients[0];
         let { create_at, user_id, ...chargeData } = charge;
+        chargeData = { ...chargeData, name: clientName.name }
         return chargeData;
       });
 
@@ -151,7 +155,10 @@ const charges = async (req, res) => {
         const due_dateFormatted = datefns.format(datefns.fromUnixTime(charge.due_date/1000), dateFormat);
         return !charge.status && due_dateFormatted < today;
       }).map(charge => {
+        const clients = getClients.filter(client => client.id === charge.client_id);
+        let { id, ...clientName } = clients[0];
         let { create_at, user_id, ...chargeData } = charge;
+        chargeData = { ...chargeData, name: clientName.name }
         return chargeData;
       });
 
@@ -164,7 +171,10 @@ const charges = async (req, res) => {
       const paid = getCharges
       .filter(charge => charge.status)
       .map(charge => {
+        const clients = getClients.filter(client => client.id === charge.client_id);
+        let { id, ...clientName } = clients[0];
         let { create_at, user_id, ...chargeData } = charge;
+        chargeData = { ...chargeData, name: clientName.name }
         return chargeData;
       });
 
