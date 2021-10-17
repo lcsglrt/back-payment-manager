@@ -198,45 +198,6 @@ const clientNameList = async (req, res) => {
   }
 }
 
-const reportClients = async (req, res) => {
-  const dateFormat = 'yyyy-MM-dd';
-  const today = datefns.format(new Date(), dateFormat);
-  let qtyOnDay = 0;
-  let qtyOverdue = 0;
-
-  try {
-    const getClients = await knex('clients').select('*').returning('*');
-    
-    const clients = getClients.map(async client => {
-      const getClientCharges = await knex('charges').select('client_id', 'status', 'due_date').where('client_id', client.id).returning('*');
-
-      const clientStatus = getClientCharges.some(charge => {
-        const due_dateFormated = datefns.format(datefns.fromUnixTime(charge.due_date), dateFormat);
-        return !charge.status && due_dateFormated < today;
-      });
-
-      if (clientStatus) {
-        qtyOverdue++;
-        return;
-      }
-
-      qtyOnDay++;   
-    });
-
-    await Promise.all(clients);
-    const qtyClientsStatus = {
-      onDay: qtyOnDay,
-      overdue: qtyOverdue
-    }
-
-    return res.json(qtyClientsStatus);
-    
-  } catch (error) {
-    return res.status(400).json(error.message);
-  }
-
-}
-
 module.exports = {
   clientRegistration,
   getDetailedClientProfile,
@@ -244,5 +205,4 @@ module.exports = {
   updateClientProfile,
   clientList,
   clientNameList,
-  reportClients
 };

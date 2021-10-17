@@ -24,7 +24,6 @@ routes.get('/nomes-clientes', clients.clientNameList);
 routes.get('/detalhes-cliente/:id', clients.getDetailedClientProfile);
 routes.get('/perfil-clientes/:id', clients.getClientProfile);
 routes.put('/clientes/:id', clients.updateClientProfile);
-routes.get('/clientes/relatorios', clients.reportClients);
 
 routes.post('/cobrancas', charges.createCharge);
 routes.get('/cobrancas', charges.chargeList);
@@ -33,5 +32,6 @@ routes.get('/cobrancas/:id', charges.getCharge);
 routes.delete('/cobrancas/:id', charges.deleteCharge);
 
 routes.get('/relatorios', reports.general);
+routes.get('/relatorios/clientes', reports.clients);
 
 module.exports = routes;
