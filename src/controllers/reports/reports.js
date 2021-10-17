@@ -3,7 +3,7 @@ const datefns = require('date-fns');
 const lodash = require('lodash');
 
 const dateFormat = 'yyyy-MM-dd';
-const today = new Date();
+const today = datefns.format(new Date(), dateFormat);
 
 const general = async (req, res) => {
   try {
@@ -26,8 +26,8 @@ const general = async (req, res) => {
       const charges = getCharges.filter(charge => charge.client_id === client.id);
 
       const isLate = charges.some(charge => {
-        const due_dateFormated = datefns.fromUnixTime(charge.due_date);     
-        return !charge.status && due_dateFormated < today;
+        const due_dateFormatted = datefns.format(datefns.fromUnixTime(charge.due_date/1000), dateFormat);   
+        return !charge.status && due_dateFormatted < today;
       });
 
       if (isLate) {
@@ -39,14 +39,14 @@ const general = async (req, res) => {
     });
 
     const countCharge = getCharges.map(charge => {
-      const due_dateFormated = datefns.fromUnixTime(charge.due_date);     
+      const due_dateFormatted = datefns.format(datefns.fromUnixTime(charge.due_date/1000), dateFormat);    
       
-      if (!charge.status && due_dateFormated < today) {
+      if (!charge.status && due_dateFormatted < today) {
         qty.charges.overdue++;
         return;
       }
 
-      if (!charge.status && due_dateFormated >= today) {
+      if (!charge.status && due_dateFormatted >= today) {
         qty.charges.expected++;
         return;
       }
@@ -71,7 +71,7 @@ const clients = async (req, res) => {
     const allClients =  getClients.map(client => {
       const charges = getCharges.filter(charge => charge.client_id === client.id);
       const isLate = charges.some(charge => {
-        const due_dateFormatted = datefns.fromUnixTime(charge.due_date);
+        const due_dateFormatted = datefns.format(datefns.fromUnixTime(charge.due_date/1000), dateFormat);
         
         if (!charge.status && due_dateFormatted === today) {
           return false;
@@ -100,10 +100,9 @@ const clients = async (req, res) => {
     })
     .filter(client => client);
 
-    const clientsOnDay = allClients.filter(client => client.isLate === false);
-    const clientsOverdue = allClients.filter(client => client.isLate === true);
-
     if (status === 'em-dia') {
+      const clientsOnDay = allClients.filter(client => client.isLate === false);
+
       if (clientsOnDay.length === 0) {
         return res.status(200).json('Nenhum cliente está em dia.');
       }
@@ -112,10 +111,12 @@ const clients = async (req, res) => {
     }
 
     if (status === 'inadimplentes') {
+      const clientsOverdue = allClients.filter(client => client.isLate === true);
+
       if (clientsOverdue.length === 0) {
-        return res.status(200).json('Nenhum cliente está em dia.');
+        return res.status(200).json('Nenhum cliente está inadimplente.');
       }
-      
+
       return res.status(200).json(clientsOverdue);
     }
   } catch (error) {

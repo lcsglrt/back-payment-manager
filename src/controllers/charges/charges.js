@@ -1,7 +1,7 @@
 const knex = require('../../database/db');
 const createChargeSchema = require('../../validations/createChargeSchema');
 const updateChargeSchema = require('../../validations/updateChargeSchema');
-const datafns = require('date-fns');
+const datefns = require('date-fns');
 
 const createCharge = async (req, res) => {
   const { client_id, description, status, amount, due_date } = req.body;
@@ -81,13 +81,15 @@ const getCharge = async (req, res) => {
 
 const deleteCharge = async (req, res) => {
   const { id } = req.params;
+  const dateFormat = 'yyyy-MM-dd';
+  const today = datefns.format(new Date(), dateFormat); 
 
   try {
     const chargeExists = await findCharge(id);
     if (!chargeExists) return res.status(404).json('Cobrança não encontrada.');
 
-    const nowInSecond = Math.floor(new Date() / 1000);
-    if (parseInt(chargeExists.due_date) < nowInSecond && chargeExists.due_date) {
+    const due_dateFormatted = datefns.format(datefns.fromUnixTime(chargeExists.due_date/1000), dateFormat);   
+    if (due_dateFormatted < today && !chargeExists.status) {
       return res.status(400).json('Não é possível excluir uma cobrança vencida.');
     }
 
