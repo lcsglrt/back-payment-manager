@@ -85,7 +85,6 @@ const clients = async (req, res) => {
 
       let { 
         user_id,
-        cpf,
         street, 
         additional, 
         city,
@@ -128,7 +127,7 @@ const charges = async (req, res) => {
   const { status } = req.query;
 
   try {
-    const getClients = await knex('clients').select('id', 'name');
+    const getClients = await knex('clients').select('id', 'name', 'cpf', 'email');
     const getCharges = await knex('charges');
 
     if (status === 'previstas') {
@@ -139,9 +138,9 @@ const charges = async (req, res) => {
       
       const expectedCharges = expected.map(charge => {
         const clients = getClients.filter(client => client.id === charge.client_id);
-        let { id, ...clientName } = clients[0];
+        let { id, ...clientData } = clients[0];
         let { create_at, user_id, ...chargeData } = charge;
-        chargeData = { ...chargeData, name: clientName.name }
+        chargeData = { ...chargeData, name: clientData.name, cpf: clientData.cpf, email: clientData.email }
         return chargeData;
       });
 
@@ -156,9 +155,9 @@ const charges = async (req, res) => {
         return !charge.status && due_dateFormatted < today;
       }).map(charge => {
         const clients = getClients.filter(client => client.id === charge.client_id);
-        let { id, ...clientName } = clients[0];
+        let { id, ...clientData } = clients[0];
         let { create_at, user_id, ...chargeData } = charge;
-        chargeData = { ...chargeData, name: clientName.name }
+        chargeData = { ...chargeData, name: clientData.name, cpf: clientData.cpf, email: clientData.email }
         return chargeData;
       });
 
@@ -172,16 +171,15 @@ const charges = async (req, res) => {
       .filter(charge => charge.status)
       .map(charge => {
         const clients = getClients.filter(client => client.id === charge.client_id);
-        let { id, ...clientName } = clients[0];
+        let { id, ...clientData } = clients[0];
         let { create_at, user_id, ...chargeData } = charge;
-        chargeData = { ...chargeData, name: clientName.name }
+        chargeData = { ...chargeData, name: clientData.name, cpf: clientData.cpf, email: clientData.email }
         return chargeData;
       });
 
       if (paid.length === 0) return res.status(400).json('Não existe cobranças pagas.');
 
       return res.status(200).json(paid);
-      
     }
     
   } catch (error) {
