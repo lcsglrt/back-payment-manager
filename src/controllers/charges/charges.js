@@ -35,7 +35,7 @@ const chargeList = async (req, res) => {
   try {
     const charges = await knex('charges')
     .join('clients', 'charges.client_id', 'clients.id')
-    .select('charges.id', 'clients.id as client_id', 'clients.name', 'charges.description', 'charges.amount', 'charges.status', 'charges.due_date');
+    .select('charges.id', 'clients.id as client_id', 'clients.name', 'clients.cpf', 'clients.email', 'charges.description', 'charges.amount', 'charges.status', 'charges.due_date');
 
     if (charges.length === 0) return res.status(404).json('Nenhuma cobrança cadastrada.');
 
