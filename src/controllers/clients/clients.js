@@ -167,7 +167,6 @@ const clientList = async (req, res) => {
 
       let { 
         user_id,
-        cpf,
         street, 
         additional, 
         city,
