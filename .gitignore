@@ -1,4 +1,3 @@
 node_modules/
-schema.sql
 .env
-.env.bkp
+.vscode
